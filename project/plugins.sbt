@@ -6,4 +6,4 @@ resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksam
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.9.0")
 
-addSbtPlugin("io.gatling" % "gatling-sbt" % "2.2.2")
+addSbtPlugin("io.gatling" % "gatling-sbt" % "3.2.1")
