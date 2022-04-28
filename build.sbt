@@ -21,8 +21,7 @@ lazy val root = (project in file("."))
     parallelExecution in Test := false,
     // Enabling sbt-auto-build plugin provides DefaultBuildSettings with default `testOptions` from `sbt-settings` plugin.
     // These testOptions are not compatible with `sbt gatling:test`. So we have to override testOptions here.
-    testOptions in Test := Seq.empty,
-    resolvers := Seq(Resolver.bintrayRepo("hmrc", "releases"))
+    testOptions in Test := Seq.empty
   )
 
 
