@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,17 @@ import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.performance.conf.{HttpConfiguration, ServicesConfiguration}
+import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 
 import java.nio.file.Paths
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
 object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
+
+  private val logger: Logger = LoggerFactory.getLogger(classOf[PerformanceTestRunner])
 
   private val upscanBaseUrl         = baseUrlFor("upscan") + "/upscan"
   private val upscanListenerBaseUrl = baseUrlFor("upscan-listener") + "/upscan-listener"
@@ -47,6 +51,8 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
         | "successRedirect": "https://www.google.co.uk",
         | "errorRedirect": "https://www.amazon.co.uk"
         |}""".stripMargin)
+
+  logger.info(s"Performance tests running with Upscan Base Url: $upscanBaseUrl")
 
   private def initiateUploadRequest(requestName: String, url: String, body: String) =
     http(requestName)
