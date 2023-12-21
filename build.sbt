@@ -6,7 +6,7 @@ val projectSettings = Seq(
   name := "upscan-performance-tests",
   organization := "uk.gov.hmrc",
   version := "999-SNAPSHOT",
-  scalaVersion := "2.12.12"
+  scalaVersion := "2.13.12"
 )
 
 lazy val root = (project in file("."))

@@ -19,7 +19,7 @@ The test can be run from performance Jenkins (job: `upscan-performance-tests`) w
 It can also be kicked-off locally via `run_staging.sh`
 It is possible to run tests against another environment by changing the `baseUrl` as follows:
 ```
-sbt '; clean; set javaOptions += "-DbaseUrl=https://www.{environmentName}.tax.service.gov.uk"; gatling:test'
+sbt '; clean; set javaOptions += "-DbaseUrl=www.{environmentName}.tax.service.gov.uk"; gatling:test'
 ```
 
 # Interpretation of test results
