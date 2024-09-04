@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ import uk.gov.hmrc.perftests.UpscanRequests._
 class Simulations extends PerformanceTestRunner {
 
   setup("v1-clean-pdf", "V1 Upload clean pdf")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.pdf"))
+    .withActions(
+      initiateTheUploadV1,
+      parseInitiateResponse,
+      createModifiedFile("/upload/test.pdf"),
+      uploadFileToAws("/upload/test.pdf"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -30,7 +35,9 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      uploadFileToAws("/upload/large-file-test.pdf"))
+      createModifiedFile("/upload/large-file-test.pdf"),
+      uploadFileToAws("/upload/large-file-test.pdf"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -38,12 +45,19 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      uploadFileToAws("/upload/eicar-standard-av-test-file"))
+      createModifiedFile("/upload/eicar-standard-av-test-file"),
+      uploadFileToAws("/upload/eicar-standard-av-test-file"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
   setup("v1-invalid-txt-filetype", "V1 Upload invalid .txt file type")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.txt"))
+    .withActions(
+      initiateTheUploadV1,
+      parseInitiateResponse,
+      createModifiedFile("/upload/test.txt"),
+      uploadFileToAws("/upload/test.txt"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -51,7 +65,9 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/test.pdf"))
+      createModifiedFile("/upload/test.pdf"),
+      uploadFileToUpscanProxy("/upload/test.pdf"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -59,7 +75,9 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
+      createModifiedFile("/upload/large-file-test.pdf"),
+      uploadFileToUpscanProxy("/upload/large-file-test.pdf"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -67,7 +85,9 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"))
+      createModifiedFile("/upload/eicar-standard-av-test-file"),
+      uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -75,7 +95,9 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/test.txt"))
+      createModifiedFile("/upload/test.txt"),
+      uploadFileToUpscanProxy("/upload/test.txt"),
+      deleteModifiedFile)
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 

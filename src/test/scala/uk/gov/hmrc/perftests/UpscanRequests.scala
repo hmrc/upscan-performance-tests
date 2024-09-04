@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import java.nio.file.Paths
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import java.nio.file.Files
+import java.nio.charset.StandardCharsets
+import java.nio.file.StandardOpenOption
 
 object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
 
@@ -86,6 +89,31 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
     exitable = true
   )
 
+  def createModifiedFile(filename: String) = new SessionHookBuilder(
+    (session: Session) => {
+      if (session.isFailed) {
+        session
+      } else {
+        val path = getModifiedFilePath(filename)
+        session.set("tempFilePath", path)
+      }
+    },
+    exitable = true
+  )
+
+  def deleteModifiedFile = new SessionHookBuilder(
+    (session: Session) => {
+      if (session.isFailed) {
+        session
+      } else {
+        val path = session("tempFilePath").as[String]
+        Files.deleteIfExists(Paths.get(path))
+        session.remove("tempFilePath")
+      }
+    },
+    exitable = true
+  )
+
   def uploadFileToAws(filename: String): HttpRequestBuilder = http("Uploading file to AWS")
     .post("${uploadHref}")
     .asMultipartForm
@@ -103,7 +131,7 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
     .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-received", "${fields.x-amz-meta-upscan-initiate-received}"))
     .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-response", "${fields.x-amz-meta-upscan-initiate-response}"))
     .bodyPart(StringBodyPart("policy", "${fields.policy}"))
-    .bodyPart(RawFileBodyPart("file", getResourceAbsolutePath(filename)))
+    .bodyPart(RawFileBodyPart("file", "${tempFilePath}"))
     .check(status.is(204))
 
   def uploadFileToUpscanProxy(filename: String): HttpRequestBuilder = http("Uploading file to Upscan Proxy")
@@ -126,14 +154,34 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
     .bodyPart(StringBodyPart("success_action_redirect", "${fields.success_action_redirect}"))
     .bodyPart(StringBodyPart("error_action_redirect", "${fields.error_action_redirect}"))
     .bodyPart(StringBodyPart("policy", "${fields.policy}"))
-    .bodyPart(RawFileBodyPart("file", getResourceAbsolutePath(filename)))
+    .bodyPart(RawFileBodyPart("file", "${tempFilePath}"))
     .check(header("Location").transform(_.contains("google")).is(true))
     .check(status.is(303))
 
-  private def getResourceAbsolutePath(filename: String) = {
-    val res = getClass.getResource(filename)
-    val file = Paths.get(res.toURI).toFile
-    file.getAbsolutePath
+  // We modify the file in order to make it unique as clamav has caching enabled
+  private def getModifiedFilePath(filename: String) = {
+    val res     = getClass.getResource(filename)
+    val file    = Paths.get(res.toURI).toFile
+    val ext     = filename.split("\\.").lastOption.getOrElse("")
+    val uuid    = java.util.UUID.randomUUID().toString
+
+    val fileBytes = Files.readAllBytes(file.toPath)
+
+    val modifiedBytes = ext match {
+      case "txt" =>
+        val comment = s"\n# Random UUID: $uuid\n"
+        fileBytes ++ comment.getBytes(StandardCharsets.UTF_8)
+      case "pdf" =>
+        val comment = s"\n% Random UUID: $uuid\n"
+        fileBytes ++ comment.getBytes(StandardCharsets.ISO_8859_1)
+      case _ =>
+        fileBytes
+    }
+
+    val tempFile = Files.createTempFile("modified_", s"_${file.getName}")
+    Files.write(tempFile, modifiedBytes, StandardOpenOption.WRITE)
+
+    tempFile.toAbsolutePath().toString()
   }
 
   val pollStatusUpdates =
