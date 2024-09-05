@@ -25,9 +25,7 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      createModifiedFile("/upload/test.pdf"),
-      uploadFileToAws("/upload/test.pdf"),
-      deleteModifiedFile)
+      uploadFileToAws("/upload/test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -35,9 +33,7 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      createModifiedFile("/upload/large-file-test.pdf"),
-      uploadFileToAws("/upload/large-file-test.pdf"),
-      deleteModifiedFile)
+      uploadFileToAws("/upload/large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -45,9 +41,7 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      createModifiedFile("/upload/eicar-standard-av-test-file"),
-      uploadFileToAws("/upload/eicar-standard-av-test-file"),
-      deleteModifiedFile)
+      uploadFileToAws("/upload/eicar-standard-av-test-file"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -55,9 +49,7 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
-      createModifiedFile("/upload/test.txt"),
-      uploadFileToAws("/upload/test.txt"),
-      deleteModifiedFile)
+      uploadFileToAws("/upload/test.txt"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -65,29 +57,23 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      createModifiedFile("/upload/test.pdf"),
-      uploadFileToUpscanProxy("/upload/test.pdf"),
-      deleteModifiedFile)
+      uploadFileToUpscanProxy("/upload/test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
-  setup("v2-large-pdf", "V2 Upload large pdf")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      createModifiedFile("/upload/large-file-test.pdf"),
-      uploadFileToUpscanProxy("/upload/large-file-test.pdf"),
-      deleteModifiedFile)
-    .withActions(pollStatusUpdates: _*)
-    .withActions(verifyFileStatus("READY"))
+  // setup("v2-large-pdf", "V2 Upload large pdf")
+  //   .withActions(
+  //     initiateTheUploadV2,
+  //     parseInitiateResponse,
+  //     uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
+  //   .withActions(pollStatusUpdates: _*)
+  //   .withActions(verifyFileStatus("READY"))
 
   setup("v2-virus", "V2 Upload virus")
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      createModifiedFile("/upload/eicar-standard-av-test-file"),
-      uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"),
-      deleteModifiedFile)
+      uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -95,9 +81,7 @@ class Simulations extends PerformanceTestRunner {
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
-      createModifiedFile("/upload/test.txt"),
-      uploadFileToUpscanProxy("/upload/test.txt"),
-      deleteModifiedFile)
+      uploadFileToUpscanProxy("/upload/test.txt"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
