@@ -13,7 +13,7 @@ The test is build around one scenario of uploading and scanning the file. The sc
 shown on the report)
 * Verifying if the file has been processed in certain time (less than 90s by default)
 
-# How to run the test
+## How to run the test
 
 The test can be run from performance Jenkins (job: `upscan-performance-tests`) which runs against the staging environment.
 It can also be kicked-off locally via `run_staging.sh`
@@ -22,7 +22,7 @@ It is possible to run tests against another environment by changing the `baseUrl
 sbt '; clean; set javaOptions += "-DbaseUrl=www.{environmentName}.tax.service.gov.uk"; gatling:test'
 ```
 
-# Interpretation of test results
+## Interpretation of test results
 
 Upscan service is processing uploaded files asynchonously, which means that response times for individual requests
 are not good indicators of service's performance. For most of the time the test scenarios are pausing in order to
@@ -42,6 +42,10 @@ There are other resources that allow to better understand performance of the ser
 * Amount of awaiting messages in inbound/outbound SQS queues on AWS
 * Aggregated metrics of upscan on Grafana (dasboard name: upscan)
 * Metrics of individual upscan services on Grafana (dashboards: upscan-initiate/upscan-verify/upscan-notify/upscan-listener)
+
+## Useful resources
+
+* [File generation and Upscan upload scripts](https://github.com/hmrc/platops-stuff/tree/main/upscan-uploader)
 
 ### License
 
