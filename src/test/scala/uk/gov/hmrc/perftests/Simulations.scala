@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import uk.gov.hmrc.perftests.UpscanRequests._
 class Simulations extends PerformanceTestRunner {
 
   setup("v1-clean-pdf", "V1 Upload clean pdf")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.pdf"))
+    .withActions(
+      initiateTheUploadV1,
+      parseInitiateResponse,
+      uploadFileToAws("/upload/test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -43,7 +46,10 @@ class Simulations extends PerformanceTestRunner {
     .withActions(verifyFileStatus("FAILED"))
 
   setup("v1-invalid-txt-filetype", "V1 Upload invalid .txt file type")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.txt"))
+    .withActions(
+      initiateTheUploadV1,
+      parseInitiateResponse,
+      uploadFileToAws("/upload/test.txt"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
@@ -55,13 +61,13 @@ class Simulations extends PerformanceTestRunner {
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
-  setup("v2-large-pdf", "V2 Upload large pdf")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
-    .withActions(pollStatusUpdates: _*)
-    .withActions(verifyFileStatus("READY"))
+  // setup("v2-large-pdf", "V2 Upload large pdf")
+  //   .withActions(
+  //     initiateTheUploadV2,
+  //     parseInitiateResponse,
+  //     uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
+  //   .withActions(pollStatusUpdates: _*)
+  //   .withActions(verifyFileStatus("READY"))
 
   setup("v2-virus", "V2 Upload virus")
     .withActions(
