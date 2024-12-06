@@ -17,12 +17,12 @@ lazy val root = (project in file("."))
   .settings(libraryDependencies ++= Dependencies.test)
   .settings(
     retrieveManaged := true,
-    initialCommands in console := "import uk.gov.hmrc._",
-    parallelExecution in Test := false,
+    console / initialCommands := "import uk.gov.hmrc._",
+    Test / parallelExecution  := false,
     // Enabling sbt-auto-build plugin provides DefaultBuildSettings with default `testOptions` from `sbt-settings` plugin.
     // These testOptions are not compatible with `sbt gatling:test`. So we have to override testOptions here.
-    testOptions in Test := Seq.empty
+    Test / testOptions := Seq.empty
   )
 
 
-lazy val showClasspath = taskKey[Unit]("show-classpath") := println((fullClasspath in Test).value.files.absString)
+lazy val showClasspath = taskKey[Unit]("show-classpath") := println((Test / fullClasspath).value.files.absString)

@@ -26,11 +26,19 @@ class Simulations extends PerformanceTestRunner {
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
-  setup("v1-large-pdf", "V1 Upload large pdf")
+  setup("v1-large-pdf", "V1 Upload 10MB pdf")
     .withActions(
       initiateTheUploadV1,
       parseInitiateResponse,
       uploadFileToAws("/upload/large-file-test.pdf"))
+    .withActions(pollStatusUpdates: _*)
+    .withActions(verifyFileStatus("READY"))
+
+  setup("v1-very-large-pdf", "V1 Upload 93MB pdf")
+    .withActions(
+      initiateTheUploadV1,
+      parseInitiateResponse,
+      uploadFileToAws("/upload/very-large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
@@ -55,11 +63,19 @@ class Simulations extends PerformanceTestRunner {
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
-  setup("v2-large-pdf", "V2 Upload large pdf")
+  setup("v2-large-pdf", "V2 Upload 10MB pdf")
     .withActions(
       initiateTheUploadV2,
       parseInitiateResponse,
       uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
+    .withActions(pollStatusUpdates: _*)
+    .withActions(verifyFileStatus("READY"))
+
+  setup("v2-very-large-pdf", "V2 Upload 93MB pdf")
+    .withActions(
+      initiateTheUploadV2,
+      parseInitiateResponse,
+      uploadFileToUpscanProxy("/upload/very-large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 

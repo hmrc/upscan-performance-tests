@@ -23,3 +23,8 @@ yarn-debug.log
 yarn-error.log
 gatling.log
 .bsp/
+*.DS_Store
+.bloop/
+.metals/
+.vscode/
+project/metals.sbt
