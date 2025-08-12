@@ -17,7 +17,7 @@
 package uk.gov.hmrc.perftests
 
 import io.gatling.core.Predef._
-import io.gatling.core.action.builder.SessionHookBuilder
+import io.gatling.core.action.builder.ActionBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.request.builder.HttpRequestBuilder
 import org.json4s._
@@ -28,7 +28,6 @@ import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 
 import java.nio.file.Paths
 import scala.concurrent.duration._
-import scala.language.postfixOps
 
 object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
 
@@ -68,11 +67,10 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
 
   case class UploadFormTemplate(href: String, fields: Map[String, String])
 
-  val parseInitiateResponse = new SessionHookBuilder(
-    (session: Session) => {
-      if (session.isFailed) {
-        session
-      } else {
+  val parseInitiateResponse: List[ActionBuilder] =
+    exec {
+      case session if session.isFailed => session
+      case session                     =>
         implicit val formats: DefaultFormats.type = DefaultFormats
 
         val initiateResponse   = session.attributes("initiateResponse").toString
@@ -81,51 +79,48 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
           .set("uploadHref", uploadFormTemplate.uploadRequest.href)
           .set("fields", uploadFormTemplate.uploadRequest.fields)
           .set("reference", uploadFormTemplate.reference)
-      }
-    },
-    exitable = true
-  )
+    }.actionBuilders
 
   def uploadFileToAws(filename: String): HttpRequestBuilder = http("Uploading file to AWS")
-    .post("${uploadHref}")
+    .post("#{uploadHref}")
     .asMultipartForm
-    .bodyPart(StringBodyPart("x-amz-meta-callback-url", "${fields.x-amz-meta-callback-url}"))
-    .bodyPart(StringBodyPart("x-amz-date", "${fields.x-amz-date}"))
-    .bodyPart(StringBodyPart("x-amz-credential", "${fields.x-amz-credential}"))
-    .bodyPart(StringBodyPart("x-amz-meta-original-filename", "${fields.x-amz-meta-original-filename}"))
-    .bodyPart(StringBodyPart("x-amz-algorithm", "${fields.x-amz-algorithm}"))
-    .bodyPart(StringBodyPart("key", "${fields.key}"))
-    .bodyPart(StringBodyPart("acl", "${fields.acl}"))
-    .bodyPart(StringBodyPart("x-amz-signature", "${fields.x-amz-signature}"))
-    .bodyPart(StringBodyPart("x-amz-meta-session-id", "${fields.x-amz-meta-session-id}"))
-    .bodyPart(StringBodyPart("x-amz-meta-request-id", "${fields.x-amz-meta-request-id}"))
-    .bodyPart(StringBodyPart("x-amz-meta-consuming-service", "${fields.x-amz-meta-consuming-service}"))
-    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-received", "${fields.x-amz-meta-upscan-initiate-received}"))
-    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-response", "${fields.x-amz-meta-upscan-initiate-response}"))
-    .bodyPart(StringBodyPart("policy", "${fields.policy}"))
+    .bodyPart(StringBodyPart("x-amz-meta-callback-url", "#{fields.x-amz-meta-callback-url}"))
+    .bodyPart(StringBodyPart("x-amz-date", "#{fields.x-amz-date}"))
+    .bodyPart(StringBodyPart("x-amz-credential", "#{fields.x-amz-credential}"))
+    .bodyPart(StringBodyPart("x-amz-meta-original-filename", "#{fields.x-amz-meta-original-filename}"))
+    .bodyPart(StringBodyPart("x-amz-algorithm", "#{fields.x-amz-algorithm}"))
+    .bodyPart(StringBodyPart("key", "#{fields.key}"))
+    .bodyPart(StringBodyPart("acl", "#{fields.acl}"))
+    .bodyPart(StringBodyPart("x-amz-signature", "#{fields.x-amz-signature}"))
+    .bodyPart(StringBodyPart("x-amz-meta-session-id", "#{fields.x-amz-meta-session-id}"))
+    .bodyPart(StringBodyPart("x-amz-meta-request-id", "#{fields.x-amz-meta-request-id}"))
+    .bodyPart(StringBodyPart("x-amz-meta-consuming-service", "#{fields.x-amz-meta-consuming-service}"))
+    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-received", "#{fields.x-amz-meta-upscan-initiate-received}"))
+    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-response", "#{fields.x-amz-meta-upscan-initiate-response}"))
+    .bodyPart(StringBodyPart("policy", "#{fields.policy}"))
     .bodyPart(RawFileBodyPart("file", getResourceAbsolutePath(filename)))
     .check(status.is(204))
 
   def uploadFileToUpscanProxy(filename: String): HttpRequestBuilder = http("Uploading file to Upscan Proxy")
-    .post("${uploadHref}")
+    .post("#{uploadHref}")
     .disableFollowRedirect
     .asMultipartForm
-    .bodyPart(StringBodyPart("x-amz-meta-callback-url", "${fields.x-amz-meta-callback-url}"))
-    .bodyPart(StringBodyPart("x-amz-date", "${fields.x-amz-date}"))
-    .bodyPart(StringBodyPart("x-amz-credential", "${fields.x-amz-credential}"))
-    .bodyPart(StringBodyPart("x-amz-meta-original-filename", "${fields.x-amz-meta-original-filename}"))
-    .bodyPart(StringBodyPart("x-amz-algorithm", "${fields.x-amz-algorithm}"))
-    .bodyPart(StringBodyPart("key", "${fields.key}"))
-    .bodyPart(StringBodyPart("acl", "${fields.acl}"))
-    .bodyPart(StringBodyPart("x-amz-signature", "${fields.x-amz-signature}"))
-    .bodyPart(StringBodyPart("x-amz-meta-session-id", "${fields.x-amz-meta-session-id}"))
-    .bodyPart(StringBodyPart("x-amz-meta-request-id", "${fields.x-amz-meta-request-id}"))
-    .bodyPart(StringBodyPart("x-amz-meta-consuming-service", "${fields.x-amz-meta-consuming-service}"))
-    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-received", "${fields.x-amz-meta-upscan-initiate-received}"))
-    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-response", "${fields.x-amz-meta-upscan-initiate-response}"))
-    .bodyPart(StringBodyPart("success_action_redirect", "${fields.success_action_redirect}"))
-    .bodyPart(StringBodyPart("error_action_redirect", "${fields.error_action_redirect}"))
-    .bodyPart(StringBodyPart("policy", "${fields.policy}"))
+    .bodyPart(StringBodyPart("x-amz-meta-callback-url", "#{fields.x-amz-meta-callback-url}"))
+    .bodyPart(StringBodyPart("x-amz-date", "#{fields.x-amz-date}"))
+    .bodyPart(StringBodyPart("x-amz-credential", "#{fields.x-amz-credential}"))
+    .bodyPart(StringBodyPart("x-amz-meta-original-filename", "#{fields.x-amz-meta-original-filename}"))
+    .bodyPart(StringBodyPart("x-amz-algorithm", "#{fields.x-amz-algorithm}"))
+    .bodyPart(StringBodyPart("key", "#{fields.key}"))
+    .bodyPart(StringBodyPart("acl", "#{fields.acl}"))
+    .bodyPart(StringBodyPart("x-amz-signature", "#{fields.x-amz-signature}"))
+    .bodyPart(StringBodyPart("x-amz-meta-session-id", "#{fields.x-amz-meta-session-id}"))
+    .bodyPart(StringBodyPart("x-amz-meta-request-id", "#{fields.x-amz-meta-request-id}"))
+    .bodyPart(StringBodyPart("x-amz-meta-consuming-service", "#{fields.x-amz-meta-consuming-service}"))
+    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-received", "#{fields.x-amz-meta-upscan-initiate-received}"))
+    .bodyPart(StringBodyPart("x-amz-meta-upscan-initiate-response", "#{fields.x-amz-meta-upscan-initiate-response}"))
+    .bodyPart(StringBodyPart("success_action_redirect", "#{fields.success_action_redirect}"))
+    .bodyPart(StringBodyPart("error_action_redirect", "#{fields.error_action_redirect}"))
+    .bodyPart(StringBodyPart("policy", "#{fields.policy}"))
     .bodyPart(RawFileBodyPart("file", getResourceAbsolutePath(filename)))
     .check(header("Location").transform(_.contains("google")).is(true))
     .check(status.is(303))
@@ -140,14 +135,14 @@ object UpscanRequests extends ServicesConfiguration with HttpConfiguration {
     asLongAsDuring(!_.attributes.get("status").contains(200), pollingTimeout) {
       exec(
         http("Polling file processing status")
-          .get(s"$upscanListenerBaseUrl/poll/" + "${reference}")
+          .get(s"$upscanListenerBaseUrl/poll/#{reference}")
           .check(status.in(200, 404).saveAs("status"))
           .silent).pause(500.milliseconds)
     }.actionBuilders
 
   def verifyFileStatus(expectedStatus: String): HttpRequestBuilder =
     http(s"Verifying final file processing status is: $expectedStatus")
-      .get(s"$upscanListenerBaseUrl/poll/" + "${reference}")
+      .get(s"$upscanListenerBaseUrl/poll/#{reference}")
       .check(status.is(200))
       .check(jsonPath("$..fileStatus").is(expectedStatus))
 
