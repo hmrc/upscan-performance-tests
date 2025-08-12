@@ -6,11 +6,11 @@ val projectSettings = Seq(
   name := "upscan-performance-tests",
   organization := "uk.gov.hmrc",
   version := "999-SNAPSHOT",
-  scalaVersion := "2.13.12"
+  scalaVersion := "2.13.16"
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(GatlingPlugin, CorePlugin, JvmPlugin, IvyPlugin, SbtAutoBuildPlugin)
+  .enablePlugins(GatlingPlugin, CorePlugin, JvmPlugin, IvyPlugin)
   .settings(projectSettings)
   .settings(showClasspath)
   .settings(scalacOptions ++= scalaOptions)

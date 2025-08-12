@@ -22,76 +22,72 @@ import uk.gov.hmrc.perftests.UpscanRequests._
 class Simulations extends PerformanceTestRunner {
 
   setup("v1-clean-pdf", "V1 Upload clean pdf")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.pdf"))
+    .withActions(initiateTheUploadV1)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToAws("/upload/test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v1-large-pdf", "V1 Upload 10MB pdf")
-    .withActions(
-      initiateTheUploadV1,
-      parseInitiateResponse,
-      uploadFileToAws("/upload/large-file-test.pdf"))
+    .withActions(initiateTheUploadV1)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToAws("/upload/large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v1-very-large-pdf", "V1 Upload 93MB pdf")
-    .withActions(
-      initiateTheUploadV1,
-      parseInitiateResponse,
-      uploadFileToAws("/upload/very-large-file-test.pdf"))
+    .withActions(initiateTheUploadV1)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToAws("/upload/very-large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v1-virus", "V1 Upload virus")
-    .withActions(
-      initiateTheUploadV1,
-      parseInitiateResponse,
-      uploadFileToAws("/upload/eicar-standard-av-test-file"))
+    .withActions(initiateTheUploadV1)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToAws("/upload/eicar-standard-av-test-file"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
   setup("v1-invalid-txt-filetype", "V1 Upload invalid .txt file type")
-    .withActions(initiateTheUploadV1, parseInitiateResponse, uploadFileToAws("/upload/test.txt"))
+    .withActions(initiateTheUploadV1)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToAws("/upload/test.txt"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
   setup("v2-clean-pdf", "V2 Upload clean pdf")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/test.pdf"))
+    .withActions(initiateTheUploadV2)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToUpscanProxy("/upload/test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v2-large-pdf", "V2 Upload 10MB pdf")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
+    .withActions(initiateTheUploadV2)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToUpscanProxy("/upload/large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v2-very-large-pdf", "V2 Upload 93MB pdf")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/very-large-file-test.pdf"))
+    .withActions(initiateTheUploadV2)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToUpscanProxy("/upload/very-large-file-test.pdf"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("READY"))
 
   setup("v2-virus", "V2 Upload virus")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"))
+    .withActions(initiateTheUploadV2)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToUpscanProxy("/upload/eicar-standard-av-test-file"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
   setup("v2-invalid-txt-filetype", "V2 Upload invalid .txt file type")
-    .withActions(
-      initiateTheUploadV2,
-      parseInitiateResponse,
-      uploadFileToUpscanProxy("/upload/test.txt"))
+    .withActions(initiateTheUploadV2)
+    .withActions(parseInitiateResponse: _*)
+    .withActions(uploadFileToUpscanProxy("/upload/test.txt"))
     .withActions(pollStatusUpdates: _*)
     .withActions(verifyFileStatus("FAILED"))
 
